@@ -24,5 +24,7 @@ public interface FriendRepository {
 
 	public List<String> getAllSubscriber(String sender);
 
+	public String getSpecificFriend(String user, String friend);
+
 
 }

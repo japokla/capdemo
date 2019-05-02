@@ -1,6 +1,9 @@
 package com.demo.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -25,7 +28,8 @@ public class FriendServiceImpl implements FriendService {
 	public Person addFriend(String user, String friend) {
 		String blockedUser = friendRepository.findBlockedUsersByUser(user, friend);
 		String blockedUser2 = friendRepository.findBlockedUsersByUser(friend, user);
-		if(!StringUtils.isEmpty(blockedUser) || !StringUtils.isEmpty(blockedUser2)) {
+		String addedFriend = friendRepository.getSpecificFriend(user, friend);
+		if(!StringUtils.isEmpty(blockedUser) || !StringUtils.isEmpty(blockedUser2) || !StringUtils.isEmpty(addedFriend)) {
 			return null;
 		}
 		Person p = new Person();
@@ -48,7 +52,20 @@ public class FriendServiceImpl implements FriendService {
 
 	@Override
 	public List<String> getCommonFriends(String user1, String user2) {
-		return friendRepository.getCommonFriends(user1, user2);
+		List<String> commonFriends = friendRepository.getCommonFriends(user1, user2);
+		List<String> blockedUser1 = friendRepository.findAllBlockedUsersByUser(user1);
+		List<String> blockedUser2 = friendRepository.findAllBlockedUsersByUser(user2);
+		List<String> filteredCommon = commonFriends.stream()
+                .filter(e -> (blockedUser1.stream()
+                        .filter(d -> d.equals(e))
+                        .count())<1)
+                        .collect(Collectors.toList());
+		filteredCommon = commonFriends.stream()
+                .filter(e -> (blockedUser2.stream()
+                        .filter(d -> d.equals(e))
+                        .count())<1)
+                        .collect(Collectors.toList());
+		return filteredCommon;
 	}
 
 	@Override

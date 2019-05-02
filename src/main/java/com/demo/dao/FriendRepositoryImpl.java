@@ -107,4 +107,19 @@ public class FriendRepositoryImpl implements FriendRepository {
 		return s;
 	}
 
+	@Override
+	public String getSpecificFriend(String user, String friend) {
+		try {
+			String qry = "SELECT p.friend FROM Person p WHERE p.user =?1 and p.friend =?2";
+			TypedQuery<String> result = entityManager.createQuery(qry, String.class);
+			result.setParameter(1, user);
+			result.setParameter(2, friend);
+			return result.getSingleResult();
+		}catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	
+
 }
