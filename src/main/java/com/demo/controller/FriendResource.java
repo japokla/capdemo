@@ -1,77 +1,88 @@
+/*
+  * Modified by: santosj
+  * Last updated: May 2, 2019 10:15:30 AM
+  */
 package com.demo.controller;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.model.Blocklist;
-import com.demo.model.Person;
-import com.demo.model.Subscriber;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.util.*;
+import org.springframework.web.bind.annotation.*;
+
+import com.demo.model.*;
 import com.demo.service.FriendService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
-@RequestMapping(value= "/friend")
+@RequestMapping(value = "/friend")
 public class FriendResource {
 
 	@Autowired
 	FriendService friendService;
 
-	@GetMapping(value= "/getFriends/{user}")
-	public ResponseEntity<List<String>> getFriends(@PathVariable(name= "user") String user) {
+	@RequestMapping(value = "/getFriends/{user}", method = RequestMethod.GET)
+	@ApiOperation(value = "Get All Friends of User", response = Object.class)
+	public ResponseEntity<List<String>> getFriends(@PathVariable(name = "user") String user) {
 		List<String> friends = friendService.getFriends(user);
-		if(CollectionUtils.isEmpty(friends)) {
+		if (CollectionUtils.isEmpty(friends)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(friendService.getFriends(user), HttpStatus.OK);
 	}
-	
-	@GetMapping(value= "/addFriend/{user}/{friend}")
-	public ResponseEntity<Person> addFriend(@PathVariable(name= "user") String user, @PathVariable(name= "friend") String friend) {
+
+	@RequestMapping(value = "/addFriend/{user}/{friend}", method = RequestMethod.POST)
+	@ApiOperation(value = "Add new friend", response = Object.class)
+	public ResponseEntity<Person> addFriend(@PathVariable(name = "user") String user,
+			@PathVariable(name = "friend") String friend) {
 		Person p = friendService.addFriend(user, friend);
-		if(ObjectUtils.isEmpty(p)) {
+		if (ObjectUtils.isEmpty(p)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(p, HttpStatus.OK);
 	}
-	
-	@GetMapping(value= "/getCommonFriends/{user1}/{user2}")
-	public ResponseEntity<List<String>> getCommonFriends(@PathVariable(name= "user1") String user1, @PathVariable(name= "user2") String user2) {
+
+	@RequestMapping(value = "/getCommonFriends/{user1}/{user2}", method = RequestMethod.GET)
+	@ApiOperation(value = "Get Common Friends of two emails", response = Object.class)
+	public ResponseEntity<List<String>> getCommonFriends(@PathVariable(name = "user1") String user1,
+			@PathVariable(name = "user2") String user2) {
 		List<String> friends = friendService.getCommonFriends(user1, user2);
-		if(CollectionUtils.isEmpty(friends)) {
+		if (CollectionUtils.isEmpty(friends)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(friends, HttpStatus.OK);
 	}
-	
-	@GetMapping(value= "/blockUser/{requestor}/{target}")
-	public ResponseEntity<Blocklist> blockUser(@PathVariable(name= "requestor") String requestor, @PathVariable(name= "target") String target) {
+
+	@RequestMapping(value = "/blockUser/{requestor}/{target}", method = RequestMethod.POST)
+	@ApiOperation(value = "Block specific user", response = Object.class)
+	public ResponseEntity<Blocklist> blockUser(@PathVariable(name = "requestor") String requestor,
+			@PathVariable(name = "target") String target) {
 		Blocklist b = friendService.blockUser(requestor, target);
-		if(ObjectUtils.isEmpty(b)) {
+		if (ObjectUtils.isEmpty(b)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(b, HttpStatus.OK);
 	}
 
-	@GetMapping(value= "/getAllSubscriber/{sender}/{text}")
-	public ResponseEntity<List<String>> getAllSubscriber(@PathVariable(name= "sender") String sender, @PathVariable(name= "text") String text) {
+	@RequestMapping(value = "/getAllSubscriber/{sender}/{text}", method = RequestMethod.GET)
+	@ApiOperation(value = "Get All Subscribers including Friends and Followed Users", response = Object.class)
+	public ResponseEntity<List<String>> getAllSubscriber(@PathVariable(name = "sender") String sender,
+			@PathVariable(name = "text") String text) {
 		List<String> recipients = friendService.getAllSubscriber(sender, text);
 		return new ResponseEntity<>(recipients, HttpStatus.OK);
 	}
-	
-	@GetMapping(value= "/subscribe/{requestor}/{target}")
-	public ResponseEntity<Subscriber> subscribe(@PathVariable(name= "requestor") String requestor, @PathVariable(name= "target") String target) {
+
+	@RequestMapping(value = "/subscribe/{requestor}/{target}", method = RequestMethod.POST)
+	@ApiOperation(value = "Follow specific user", response = Object.class)
+	public ResponseEntity<Subscriber> subscribe(@PathVariable(name = "requestor") String requestor,
+			@PathVariable(name = "target") String target) {
 		Subscriber s = friendService.subscribe(requestor, target);
-		if(ObjectUtils.isEmpty(s)) {
+		if (ObjectUtils.isEmpty(s)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(s, HttpStatus.OK);
 	}
-	
+
 }

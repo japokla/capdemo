@@ -31,3 +31,4 @@ target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.l
 target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 target/test-classes/com/demo/test/TEst.class
 target/test-classes/com/demo/test/service/FriendServiceTestImpl.class
+/target/
